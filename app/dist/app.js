@@ -9,6 +9,7 @@ const ConsistentHashingLB_1 = require("./ConsistentHashingLB");
 const child_process_1 = require("child_process");
 //Setup
 const app = (0, express_1.default)();
+//Spawn Test Workers
 for (let i = 0; i <= 1; i++) {
     (0, child_process_1.spawn)("node", [
         "/home/amado/Documents/System-Design/Express-Load-Balancer/app/dist/worker.js",
@@ -16,11 +17,11 @@ for (let i = 0; i <= 1; i++) {
         `${5001 + i}`,
     ]);
 }
-//Test
-const servers = ["http://localhost"];
+//Test Load Balancer
+const servers = ["http://localhost:5001", "http://localhost:5002"];
 const lb = new ConsistentHashingLB_1.ConsistentHashingLB({
     servers: servers,
-    port: 5001,
+    replicas: 10,
 });
 app.get(/.*/, async (req, res) => {
     await lb.handler(req, res);

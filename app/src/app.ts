@@ -16,10 +16,10 @@ for (let i = 0; i <= 1; i++) {
 }
 
 //Test Load Balancer
-const servers = ["http://localhost"];
+const servers = ["http://localhost:5001", "http://localhost:5002"];
 const lb = new ConsistentHashingLB({
   servers: servers,
-  port: 5001,
+  replicas: 10,
 });
 app.get(/.*/, async (req, res) => {
   await lb.handler(req, res);

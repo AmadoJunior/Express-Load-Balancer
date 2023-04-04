@@ -6,7 +6,6 @@ export interface IConsistentHashingLBOptions {
   servers: string[];
   algorithm?: string;
   replicas?: number;
-  port: number;
 }
 
 export class ConsistentHashingLB {
@@ -16,16 +15,14 @@ export class ConsistentHashingLB {
   #ring: Map<string, string>;
   #keys: string[];
   #nodes: string[];
-  #port: number;
 
   //Constructor
   constructor(options: IConsistentHashingLBOptions) {
-    this.#replicas = options.replicas || 2;
+    this.#replicas = options.replicas || 5;
     this.#algorithm = options.algorithm || "md5";
     this.#ring = new Map();
     this.#keys = [];
     this.#nodes = [];
-    this.#port = options.port;
     for (let server of options.servers) {
       this.addNode(server);
     }
@@ -38,11 +35,11 @@ export class ConsistentHashingLB {
     for (let i = 0; i < this.#replicas; i++) {
       const key = crypto
         .createHash(this.#algorithm)
-        .update(`${node}:${this.#port + i}`)
+        .update(`${node}:${i}`)
         .digest("hex");
 
       this.#keys.push(key);
-      this.#ring[key] = `${node}:${this.#port + i}`;
+      this.#ring[key] = `${node}`;
     }
 
     this.#keys.sort();
@@ -54,7 +51,7 @@ export class ConsistentHashingLB {
     for (let i = 0; i < this.#replicas; i++) {
       const key = crypto
         .createHash(this.#algorithm)
-        .update(`${node}:${this.#port + i}`)
+        .update(`${node}:${i}`)
         .digest("hex");
 
       delete this.#ring[key];

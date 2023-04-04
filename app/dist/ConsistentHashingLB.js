@@ -13,7 +13,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _ConsistentHashingLB_replicas, _ConsistentHashingLB_algorithm, _ConsistentHashingLB_ring, _ConsistentHashingLB_keys, _ConsistentHashingLB_nodes, _ConsistentHashingLB_port;
+var _ConsistentHashingLB_replicas, _ConsistentHashingLB_algorithm, _ConsistentHashingLB_ring, _ConsistentHashingLB_keys, _ConsistentHashingLB_nodes;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConsistentHashingLB = void 0;
 const axios_1 = __importDefault(require("axios"));
@@ -27,13 +27,11 @@ class ConsistentHashingLB {
         _ConsistentHashingLB_ring.set(this, void 0);
         _ConsistentHashingLB_keys.set(this, void 0);
         _ConsistentHashingLB_nodes.set(this, void 0);
-        _ConsistentHashingLB_port.set(this, void 0);
-        __classPrivateFieldSet(this, _ConsistentHashingLB_replicas, options.replicas || 2, "f");
+        __classPrivateFieldSet(this, _ConsistentHashingLB_replicas, options.replicas || 5, "f");
         __classPrivateFieldSet(this, _ConsistentHashingLB_algorithm, options.algorithm || "md5", "f");
         __classPrivateFieldSet(this, _ConsistentHashingLB_ring, new Map(), "f");
         __classPrivateFieldSet(this, _ConsistentHashingLB_keys, [], "f");
         __classPrivateFieldSet(this, _ConsistentHashingLB_nodes, [], "f");
-        __classPrivateFieldSet(this, _ConsistentHashingLB_port, options.port, "f");
         for (let server of options.servers) {
             this.addNode(server);
         }
@@ -44,10 +42,10 @@ class ConsistentHashingLB {
         for (let i = 0; i < __classPrivateFieldGet(this, _ConsistentHashingLB_replicas, "f"); i++) {
             const key = crypto_1.default
                 .createHash(__classPrivateFieldGet(this, _ConsistentHashingLB_algorithm, "f"))
-                .update(`${node}:${__classPrivateFieldGet(this, _ConsistentHashingLB_port, "f") + i}`)
+                .update(`${node}:${i}`)
                 .digest("hex");
             __classPrivateFieldGet(this, _ConsistentHashingLB_keys, "f").push(key);
-            __classPrivateFieldGet(this, _ConsistentHashingLB_ring, "f")[key] = `${node}:${__classPrivateFieldGet(this, _ConsistentHashingLB_port, "f") + i}`;
+            __classPrivateFieldGet(this, _ConsistentHashingLB_ring, "f")[key] = `${node}`;
         }
         __classPrivateFieldGet(this, _ConsistentHashingLB_keys, "f").sort();
     }
@@ -56,7 +54,7 @@ class ConsistentHashingLB {
         for (let i = 0; i < __classPrivateFieldGet(this, _ConsistentHashingLB_replicas, "f"); i++) {
             const key = crypto_1.default
                 .createHash(__classPrivateFieldGet(this, _ConsistentHashingLB_algorithm, "f"))
-                .update(`${node}:${__classPrivateFieldGet(this, _ConsistentHashingLB_port, "f") + i}`)
+                .update(`${node}:${i}`)
                 .digest("hex");
             delete __classPrivateFieldGet(this, _ConsistentHashingLB_ring, "f")[key];
             __classPrivateFieldGet(this, _ConsistentHashingLB_keys, "f").filter((value) => value !== key);
@@ -89,8 +87,8 @@ class ConsistentHashingLB {
     }
     getNode(key) {
         if (this.getRingLength() == 0)
-            return 0;
-        const hash = this.crypto(key); //get hash of data/key
+            return null;
+        const hash = crypto_1.default.createHash(__classPrivateFieldGet(this, _ConsistentHashingLB_algorithm, "f")).update(key).digest("hex");
         const pos = this.getNodePosition(hash);
         return __classPrivateFieldGet(this, _ConsistentHashingLB_ring, "f")[__classPrivateFieldGet(this, _ConsistentHashingLB_keys, "f")[pos]];
     }
@@ -119,9 +117,6 @@ class ConsistentHashingLB {
         //Compare Hashes
         return v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
     }
-    crypto(str) {
-        return crypto_1.default.createHash(__classPrivateFieldGet(this, _ConsistentHashingLB_algorithm, "f")).update(str).digest("hex");
-    }
 }
 exports.ConsistentHashingLB = ConsistentHashingLB;
-_ConsistentHashingLB_replicas = new WeakMap(), _ConsistentHashingLB_algorithm = new WeakMap(), _ConsistentHashingLB_ring = new WeakMap(), _ConsistentHashingLB_keys = new WeakMap(), _ConsistentHashingLB_nodes = new WeakMap(), _ConsistentHashingLB_port = new WeakMap();
+_ConsistentHashingLB_replicas = new WeakMap(), _ConsistentHashingLB_algorithm = new WeakMap(), _ConsistentHashingLB_ring = new WeakMap(), _ConsistentHashingLB_keys = new WeakMap(), _ConsistentHashingLB_nodes = new WeakMap();
