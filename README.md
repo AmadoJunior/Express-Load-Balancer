@@ -4,4 +4,4 @@
 
 ##### - Roud Robin
 
-##### - Sticky Sessions (ConsistentHashing)
+##### - Sticky Sessions (Consistent Hashing)
