@@ -1,4 +1,4 @@
-### Express Load Balancer Implementation
+### Express Load Balancer
 
 #### Implements:
 
