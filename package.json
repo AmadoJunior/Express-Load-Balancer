@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "install": "cd app && npm install",
-    "start": "cd app && tsc && node dist/app.js"
+    "start": "cd app && tsc && node dist/app.js",
+    "startWorker": "cd app && tsc && node dist/worker.js"
   },
   "repository": {
     "type": "git"

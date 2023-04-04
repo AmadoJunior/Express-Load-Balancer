@@ -32,7 +32,7 @@ export class ConsistentHashingLB {
   }
 
   //Methods
-  addNode(node: string) {
+  addNode(node: string): void {
     this.#nodes.push(node);
 
     for (let i = 0; i < this.#replicas; i++) {
@@ -48,7 +48,7 @@ export class ConsistentHashingLB {
     this.#keys.sort();
   }
 
-  removeNode(node: string) {
+  removeNode(node: string): void {
     this.#nodes.filter((value) => value !== node);
 
     for (let i = 0; i < this.#replicas; i++) {
@@ -91,16 +91,16 @@ export class ConsistentHashingLB {
     return high;
   }
 
-  getNode(key: string) {
-    if (this.getRingLength() == 0) return 0;
+  getNode(key: string): string {
+    if (this.getRingLength() == 0) return null;
 
-    const hash = this.crypto(key); //get hash of data/key
+    const hash = crypto.createHash(this.#algorithm).update(key).digest("hex");
     const pos = this.getNodePosition(hash);
 
     return this.#ring[this.#keys[pos]];
   }
 
-  async handler(req: Request, res: Response) {
+  async handler(req: Request, res: Response): Promise<void> {
     const { method, url, headers, body } = req;
     const remoteAddress =
       (req.header("x-forwarded-for") as string) || (req.ip as string);
@@ -126,9 +126,5 @@ export class ConsistentHashingLB {
   compare(v1: string, v2: string): number {
     //Compare Hashes
     return v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
-  }
-
-  crypto(str: string): string {
-    return crypto.createHash(this.#algorithm).update(str).digest("hex");
   }
 }
