@@ -1,5 +1,7 @@
 ### Express Load Balancer Implementation
 
-#### Roud Robin
+#### Implements
 
-#### Sticky Sessions (ConsistentHashing)
+##### - Roud Robin
+
+##### - Sticky Sessions (ConsistentHashing)
