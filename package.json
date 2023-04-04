@@ -1,0 +1,15 @@
+{
+  "name": "express-rate-limiter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "install": "cd app && npm install",
+    "start": "cd app && tsc && node dist/app.js"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "author": "Amado Dominguez",
+  "license": "UNLICENSED",
+  "description": ""
+}
